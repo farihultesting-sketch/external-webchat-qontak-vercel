@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Chatbot & Mekari Qontak Live Agent Handover
 
-## Getting Started
+Webchat AI berbasis Next.js App Router dengan dukungan handover ke agen manusia di Mekari Qontak Omnichannel, sinkronisasi balasan agen & auto-resolve via webhook, serta penyimpanan sesi persistent menggunakan Upstash Redis.
 
-First, run the development server:
+## Struktur Utama
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- `components/ChatWidget.tsx` — Komponen floating widget chat di sisi pengguna.
+- `lib/sessionStore.ts` — Manajemen sesi chat (`async/await`) menggunakan Upstash Redis (dengan fallback in-memory untuk pengembangan lokal).
+- `lib/qontakApi.ts` — Integrasi API Mekari Qontak (membuat/mengelola percakapan & mengirim pesan).
+- `app/api/chat/route.ts` — Endpoint chat AI.
+- `app/api/handover/route.ts` — Mengalihkan sesi chat dari AI ke agen Qontak beserta ringkasan percakapan.
+- `app/api/chat/send/route.ts` — Mengirim pesan lanjutan dari pengguna ke room Qontak.
+- `app/api/chat/poll/route.ts` — Mengambil balasan agen dan status resolve sesi.
+- `app/api/webhook/qontak/route.ts` — Menerima webhook dari Qontak (`receive_message_from_agent` & `room_resolved`).
+- `app/api/webhook/setup/route.ts` — Endpoint helper untuk mendaftarkan webhook Qontak secara otomatis ke domain aktif.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Buat file `.env.local` untuk pengembangan lokal (atau isi langsung di **Project Settings > Environment Variables** pada Vercel):
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```env
+GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key
+QONTAK_API_TOKEN=your_qontak_api_token
+QONTAK_REFRESH_TOKEN=your_qontak_refresh_token
+QONTAK_CHANNEL_INTEGRATION_ID=your_qontak_channel_integration_id
+UPSTASH_REDIS_REST_URL=your_upstash_redis_rest_url
+UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_rest_token
